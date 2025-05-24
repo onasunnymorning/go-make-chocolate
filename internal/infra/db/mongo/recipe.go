@@ -1,24 +1,25 @@
 package mongo
 
 import (
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 
-	"github.com/onassunnymorning/go-make-chocolate/pkg/recipe"
+	_ "go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/onasunnymorning/go-make-chocolate/pkg/recipe"
 )
 
 // RecipeDoc represents a recipe document in MongoDB
 type RecipeDoc struct {
-	ID          primitive.ObjectID `bson:"_id,omitempty"`
-	Name        string             `bson:"name"`
-	Description string             `bson:"description"`
-	Ingredients []IngredientDoc    `bson:"ingredients"`
-	Instructions string            `bson:"instructions"`
-	CreatedAt   time.Time          `bson:"created_at"`
-	UpdatedAt   time.Time          `bson:"updated_at"`
-	CreatedBy   string             `bson:"created_by"`
-	UpdatedBy   string             `bson:"updated_by"`
+	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	Name         string             `bson:"name"`
+	Description  string             `bson:"description"`
+	Ingredients  []IngredientDoc    `bson:"ingredients"`
+	Instructions string             `bson:"instructions"`
+	CreatedAt    time.Time          `bson:"created_at"`
+	UpdatedAt    time.Time          `bson:"updated_at"`
+	CreatedBy    string             `bson:"created_by"`
+	UpdatedBy    string             `bson:"updated_by"`
 }
 
 // IngredientDoc represents an ingredient document in MongoDB
@@ -52,15 +53,15 @@ func (r *RecipeDoc) ToDomain() *recipe.Recipe {
 func ToMongo(r *recipe.Recipe) *RecipeDoc {
 	id, _ := primitive.ObjectIDFromHex(r.ID)
 	return &RecipeDoc{
-		ID:          id,
-		Name:        r.Name,
-		Description: r.Description,
-		Ingredients: toMongoIngredients(r.Ingredients),
+		ID:           id,
+		Name:         r.Name,
+		Description:  r.Description,
+		Ingredients:  toMongoIngredients(r.Ingredients),
 		Instructions: r.Instructions,
-		CreatedAt:   r.CreatedAt,
-		UpdatedAt:   r.UpdatedAt,
-		CreatedBy:   r.CreatedBy,
-		UpdatedBy:   r.UpdatedBy,
+		CreatedAt:    r.CreatedAt,
+		UpdatedAt:    r.UpdatedAt,
+		CreatedBy:    r.CreatedBy,
+		UpdatedBy:    r.UpdatedBy,
 	}
 }
 
