@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:8.0.10-rc0
+    container_name: recipe-api-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=your-secret-password
+    networks:
+      - recipe-network
+
+  recipe-api:
+    image: recipe-api:local
+    container_name: recipe-api
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGODB_URI=mongodb://admin:your-secret-password@recipe-api-mongodb:27017/recipes?authSource=admin
+      - MONGODB_DATABASE=recipes
+    networks:
+      - recipe-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  recipe-network:
+    driver: bridge
