@@ -11,6 +11,10 @@ import (
 	"github.com/onasunnymorning/go-make-chocolate/internal/infra/db/mongo"
 	"github.com/onasunnymorning/go-make-chocolate/internal/service"
 	"github.com/onasunnymorning/go-make-chocolate/pkg/recipe"
+
+	docs "github.com/onasunnymorning/go-make-chocolate/cmd/recipe_api/docs" // Import docs pkg to be able to access docs.json https://github.com/swaggo/swag/issues/830#issuecomment-725587162
+	swaggerFiles "github.com/swaggo/files"                                  // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger"                              // gin-swagger middleware
 )
 
 // RecipeRequest represents the request body for creating/updating a recipe

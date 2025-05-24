@@ -16,6 +16,9 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
+# Build the Swagger documentation
+RUN swag init --parseDependency --parseInternal --output ./docs
+
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o recipe-api ./cmd/recipe_api
 
