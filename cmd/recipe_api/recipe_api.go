@@ -4,12 +4,15 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/onasunnymorning/go-make-chocolate/internal/infra/db/mongo"
 	"github.com/onasunnymorning/go-make-chocolate/internal/interface/rest"
 	"github.com/onasunnymorning/go-make-chocolate/internal/service"
 	"github.com/onasunnymorning/go-make-chocolate/pkg/recipe"
+	"go.uber.org/zap"
 
 	_ "github.com/onasunnymorning/go-make-chocolate/cmd/recipe_api/docs"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
@@ -43,8 +46,18 @@ type RecipeRequest struct {
 // @externalDocs.description  OpenAPI
 // @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
+	// create a new logger
+	logger, err := zap.NewProduction()
+	if err != nil {
+		log.Fatalf("Failed to create logger: %s", err)
+	}
 	// Create a new Gin router
 	r := gin.Default()
+	// Use ginzap middleware to log requests with Zap
+	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+
+	// Use ginzap recovery middleware to catch panics and log with Zap
+	r.Use(ginzap.RecoveryWithZap(logger, true))
 
 	mongoClient, err := mongo.NewClient(os.Getenv("MONGODB_URI"))
 	if err != nil {
