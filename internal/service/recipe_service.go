@@ -46,7 +46,7 @@ func (s *recipeService) Create(ctx context.Context, rcp *recipe.Recipe) (*recipe
 	rcp.CreatedAt = time.Now()
 	rcp.UpdatedAt = time.Now()
 
-	newRecipe, err := recipe.NewRecipe(rcp.Name, rcp.Description, rcp.Ingredients)
+	newRecipe, err := recipe.NewRecipe(rcp.Name, rcp.Description, rcp.Ingredients, rcp.Instructions)
 	if err != nil {
 		return nil, err
 	}

@@ -35,7 +35,7 @@ type Recipe struct {
 }
 
 // NewRecipe creates a new Recipe instance with the provided name, description, and ingredients. Cacao percentage is calculated automatically.
-func NewRecipe(name, description string, ingredients []Ingredient) (*Recipe, error) {
+func NewRecipe(name, description string, ingredients []Ingredient, instructions string) (*Recipe, error) {
 	if name == "" {
 		return nil, ErrNameRequired
 	}
@@ -44,11 +44,12 @@ func NewRecipe(name, description string, ingredients []Ingredient) (*Recipe, err
 	}
 
 	rcp := &Recipe{
-		Name:        name,
-		Description: description,
-		Ingredients: ingredients,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
+		Name:         name,
+		Description:  description,
+		Ingredients:  ingredients,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+		Instructions: instructions,
 	}
 
 	rcp.CacaoPercentage = rcp.CalculateCacaoPercentage()

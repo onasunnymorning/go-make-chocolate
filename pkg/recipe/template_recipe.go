@@ -13,10 +13,14 @@ type TemplateRecipe struct {
 	CacaoPercentage float64 // Cacao percentage of the recipe
 }
 
-func (tr *TemplateRecipe) ToRecipe(batchSize float64) *Recipe {
+// ToRecipe converts a TemplateRecipe to a Recipe with recalculated ingredient quantities based on the desired yield.
+// The yield is specified in grams, and the ingredient quantities are adjusted accordingly.
+// The recipe ID is preserved, and the name and description are modified to reflect the new yield.
+// If the yield is zero or negative, it returns nil.
+func (tr *TemplateRecipe) ToRecipe(yield float64) *Recipe {
 	ingredients := make([]Ingredient, len(tr.Ingredients))
 	for i, ing := range tr.Ingredients {
-		quantity := ing.Percentage * batchSize / 100
+		quantity := ing.Percentage * yield / 100
 		ingredients[i] = Ingredient{
 			Name:     ing.Name,
 			IsCacao:  ing.IsCacao,
@@ -25,11 +29,11 @@ func (tr *TemplateRecipe) ToRecipe(batchSize float64) *Recipe {
 	}
 	return &Recipe{
 		ID:              tr.RecipeID,
-		Name:            tr.Name + "-toYield" + strconv.FormatFloat(batchSize, 'f', 0, 64),
-		Description:     tr.Description + "with quantities recalculated for a batch size of " + strconv.FormatFloat(batchSize, 'f', 0, 64) + " grams",
+		Name:            tr.Name + "-toYield" + strconv.FormatFloat(yield, 'f', 0, 64),
+		Description:     tr.Description + " - with quantities recalculated for a batch size of " + strconv.FormatFloat(yield, 'f', 0, 64) + " grams",
 		Ingredients:     ingredients,
 		Instructions:    tr.Instructions,
 		CacaoPercentage: tr.CacaoPercentage,
-		Yield:           Quantity{Unit: "grams", Amount: batchSize},
+		Yield:           Quantity{Unit: "grams", Amount: yield},
 	}
 }

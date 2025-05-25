@@ -23,7 +23,7 @@ func NewRecipeController(recipeService service.RecipeService) *RecipeController 
 
 // GetRecipyByID godoc
 // @Summary Get a Recipe by ID
-// @Description Get a Recipe by ID
+// @Description Get a Recipe by ID. If yield is specified, it returns the recipe scaled to that yield.
 // @Tags recipes
 // @Produce json
 // @Param id path string true "Recipe ID"

@@ -256,7 +256,7 @@ func TestNewRecipe(t *testing.T) {
 	}
 
 	// Test valid recipe creation
-	rcp, err := recipe.NewRecipe("Chocolate Delight", "A delicious chocolate recipe", validIngredients)
+	rcp, err := recipe.NewRecipe("Chocolate Delight", "A delicious chocolate recipe", validIngredients, "Mix all ingredients")
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)
 	}
@@ -279,13 +279,13 @@ func TestNewRecipe(t *testing.T) {
 	}
 
 	// Test recipe creation with empty name, should return ErrNameRequired
-	_, err = recipe.NewRecipe("", "No name", validIngredients)
+	_, err = recipe.NewRecipe("", "No name", validIngredients, "myinstructions")
 	if err != recipe.ErrNameRequired {
 		t.Errorf("Expected error %v for empty name, got %v", recipe.ErrNameRequired, err)
 	}
 
 	// Test recipe creation with empty ingredients, should return ErrIngredientsRequired
-	_, err = recipe.NewRecipe("No Ingredients", "Test recipe", []recipe.Ingredient{})
+	_, err = recipe.NewRecipe("No Ingredients", "Test recipe", []recipe.Ingredient{}, "myinstructions")
 	if err != recipe.ErrIngredientsRequired {
 		t.Errorf("Expected error %v for empty ingredients, got %v", recipe.ErrIngredientsRequired, err)
 	}
