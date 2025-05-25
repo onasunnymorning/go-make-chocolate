@@ -30,7 +30,8 @@ type Recipe struct {
 	UpdatedAt       time.Time
 	CreatedBy       string
 	UpdatedBy       string
-	CacaoPercentage float64 // Cacao percentage of the recipe, calculated from ingredients
+	CacaoPercentage float64  // Cacao percentage of the recipe, calculated from ingredients
+	Yield           Quantity // Batch size or yield of the recipe
 }
 
 // NewRecipe creates a new Recipe instance with the provided name, description, and ingredients. Cacao percentage is calculated automatically.
@@ -51,8 +52,21 @@ func NewRecipe(name, description string, ingredients []Ingredient) (*Recipe, err
 	}
 
 	rcp.CacaoPercentage = rcp.CalculateCacaoPercentage()
+	rcp.Yield = rcp.CalculateYield()
 
 	return rcp, nil
+}
+
+// CalculateYield calculates the yield in grams of the recipe based on its ingredients.
+func (r *Recipe) CalculateYield() Quantity {
+	var totalQuantity float64
+	for _, ingredient := range r.Ingredients {
+		totalQuantity += ingredient.Quantity.Amount
+	}
+	return Quantity{
+		Unit:   "grams",
+		Amount: totalQuantity,
+	}
 }
 
 // calculateCacaoPercentage calculates the cacao percentage of the recipe based on its ingredients.

@@ -21,6 +21,7 @@ type RecipeDoc struct {
 	CreatedBy       string             `bson:"created_by"`
 	UpdatedBy       string             `bson:"updated_by"`
 	CacaoPercentage float64            `bson:"cacao_percentage,omitempty"` // Optional field for cacao percentage
+	Yield           QuantityDoc        `bson:"yield,omitempty"`            // Optional field for yield
 }
 
 // IngredientDoc represents an ingredient document in MongoDB
@@ -49,6 +50,7 @@ func (r *RecipeDoc) ToDomain() *recipe.Recipe {
 		CreatedBy:       r.CreatedBy,
 		UpdatedBy:       r.UpdatedBy,
 		CacaoPercentage: r.CacaoPercentage,
+		Yield:           toDomainQuantity(r.Yield),
 	}
 }
 
@@ -66,6 +68,7 @@ func ToMongo(r *recipe.Recipe) *RecipeDoc {
 		CreatedBy:       r.CreatedBy,
 		UpdatedBy:       r.UpdatedBy,
 		CacaoPercentage: r.CacaoPercentage,
+		Yield:           toMongoQuantity(r.Yield),
 	}
 }
 

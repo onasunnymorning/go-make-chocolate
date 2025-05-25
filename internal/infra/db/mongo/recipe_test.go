@@ -144,7 +144,6 @@ func TestConversions(t *testing.T) {
 	// Test all unit conversions
 	testUnits := []recipe.Unit{
 		recipe.Gram,
-		recipe.Kilogram,
 	}
 
 	for _, unit := range testUnits {
@@ -299,5 +298,79 @@ func TestErrorMethod(t *testing.T) {
 	}
 	if got := err.Error(); got != "test_message" {
 		t.Errorf("expected error message %q, got %q", "test_message", got)
+	}
+}
+
+func TestToTemplate(t *testing.T) {
+	// Setup test ingredients: one cacao and one non-cacao.
+	ingredients := []recipe.Ingredient{
+		{
+			Name:    "Cacao",
+			IsCacao: true,
+			Quantity: recipe.Quantity{
+				Amount: 40,
+				Unit:   recipe.Gram,
+			},
+		},
+		{
+			Name:    "Sugar",
+			IsCacao: false,
+			Quantity: recipe.Quantity{
+				Amount: 60,
+				Unit:   recipe.Gram,
+			},
+		},
+	}
+	// Create a Recipe instance with a preset ID and calculated cacao percentage.
+	r := &recipe.Recipe{
+		ID:           "test_recipe_id",
+		Name:         "Test Recipe",
+		Description:  "A recipe to test ToTemplate conversion",
+		Ingredients:  ingredients,
+		Instructions: "Mix all ingredients",
+	}
+	// Calculate the cacao percentage based on ingredients.
+	r.CacaoPercentage = r.CalculateCacaoPercentage()
+
+	// Convert the Recipe to a TemplateRecipe.
+	templateRec := r.ToTemplate()
+
+	// Verify that the RecipeID is correctly set.
+	if templateRec.RecipeID != r.ID {
+		t.Errorf("Expected TemplateRecipe.RecipeID %s, got %s", r.ID, templateRec.RecipeID)
+	}
+
+	// Compute the total quantity for percentage calculation.
+	total := 0.0
+	for _, ing := range r.Ingredients {
+		total += ing.Quantity.Amount
+	}
+
+	// Verify each converted TemplateIngredient.
+	if len(templateRec.Ingredients) != len(r.Ingredients) {
+		t.Fatalf("Expected %d TemplateIngredients, got %d", len(r.Ingredients), len(templateRec.Ingredients))
+	}
+
+	for i, tempIng := range templateRec.Ingredients {
+		origIng := r.Ingredients[i]
+		// Expected percentage calculation.
+		expectedPerc := 0.0
+		if total > 0 {
+			expectedPerc = (origIng.Quantity.Amount / total) * 100
+		}
+		if tempIng.Percentage != expectedPerc {
+			t.Errorf("Ingredient %d: expected percentage %f, got %f", i, expectedPerc, tempIng.Percentage)
+		}
+		if tempIng.Name != origIng.Name {
+			t.Errorf("Ingredient %d: expected name %s, got %s", i, origIng.Name, tempIng.Name)
+		}
+		if tempIng.IsCacao != origIng.IsCacao {
+			t.Errorf("Ingredient %d: expected IsCacao %t, got %t", i, origIng.IsCacao, tempIng.IsCacao)
+		}
+	}
+
+	// Verify that the overall cacao percentage is preserved.
+	if templateRec.CacaoPercentage != r.CacaoPercentage {
+		t.Errorf("Expected TemplateRecipe.CacaoPercentage %f, got %f", r.CacaoPercentage, templateRec.CacaoPercentage)
 	}
 }

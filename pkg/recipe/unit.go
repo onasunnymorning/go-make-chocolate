@@ -4,6 +4,5 @@ package recipe
 type Unit string
 
 const (
-	Gram     Unit = "g"
-	Kilogram Unit = "kg"
+	Gram Unit = "g"
 )

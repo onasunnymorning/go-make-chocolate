@@ -16,18 +16,6 @@ func (q Quantity) String() string {
 	return fmt.Sprintf("%g %s", q.Amount, q.Unit)
 }
 
-// ConvertTo converts the quantity to a different unit, if conversion is supported.
-func (q Quantity) ConvertTo(target Unit) (Quantity, error) {
-	switch {
-	case q.Unit == Gram && target == Kilogram:
-		return Quantity{Amount: q.Amount / 1000, Unit: target}, nil
-	case q.Unit == Kilogram && target == Gram:
-		return Quantity{Amount: q.Amount * 1000, Unit: target}, nil
-	default:
-		return Quantity{}, fmt.Errorf("conversion from %s to %s not supported", q.Unit, target)
-	}
-}
-
 // ParseQuantity creates a Quantity from a string like "1.5 kg".
 func ParseQuantity(s string) (Quantity, error) {
 	parts := strings.Fields(s)
@@ -46,6 +34,6 @@ func ParseQuantity(s string) (Quantity, error) {
 // SupportedUnits returns the list of all defined units.
 func SupportedUnits() []Unit {
 	return []Unit{
-		Gram, Kilogram,
+		Gram,
 	}
 }
