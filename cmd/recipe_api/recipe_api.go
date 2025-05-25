@@ -11,20 +11,12 @@ import (
 	"github.com/onasunnymorning/go-make-chocolate/internal/infra/db/mongo"
 	"github.com/onasunnymorning/go-make-chocolate/internal/interface/rest"
 	"github.com/onasunnymorning/go-make-chocolate/internal/service"
-	"github.com/onasunnymorning/go-make-chocolate/pkg/recipe"
 	"go.uber.org/zap"
 
 	_ "github.com/onasunnymorning/go-make-chocolate/cmd/recipe_api/docs"
 	swaggerFiles "github.com/swaggo/files"     // swagger embed files
 	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
-
-type RecipeRequest struct {
-	Name         string              `json:"name" binding:"required"`
-	Description  string              `json:"description"`
-	Ingredients  []recipe.Ingredient `json:"ingredients" binding:"required,dive"`
-	Instructions string              `json:"instructions" binding:"required"`
-}
 
 // @title           Recipe API
 // @version         0.1

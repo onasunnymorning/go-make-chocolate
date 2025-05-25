@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	gin "github.com/gin-gonic/gin"
+	command "github.com/onasunnymorning/go-make-chocolate/internal/command"
 	service "github.com/onasunnymorning/go-make-chocolate/internal/service"
 	recipe "github.com/onasunnymorning/go-make-chocolate/pkg/recipe"
 )
@@ -20,14 +21,6 @@ func NewRecipeController(recipeService service.RecipeService) *RecipeController 
 	}
 }
 
-// RecipeRequest represents the request body for creating/updating a recipe
-type RecipeRequest struct {
-	Name         string              `json:"name" binding:"required"`
-	Description  string              `json:"description"`
-	Ingredients  []recipe.Ingredient `json:"ingredients" binding:"required,dive"`
-	Instructions string              `json:"instructions" binding:"required"`
-}
-
 // GetRecipyByID godoc
 // @Summary Get a Recipe by ID
 // @Description Get a Recipe by ID
@@ -37,6 +30,7 @@ type RecipeRequest struct {
 // @Success 200 {object} recipe.Recipe
 // @Failure 404
 // @Failure 500
+// @Router /{id} [get]
 func (rc *RecipeController) GetRecipeByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -85,12 +79,13 @@ func (rc *RecipeController) GetRecipeTemplate(ctx *gin.Context) {
 // @Tags recipes
 // @Accept json
 // @Produce json
-// @Param recipe body RecipeRequest true "Recipe Request"
+// @Param recipe body command.RecipeRequest true "Recipe Request"
 // @Success 201 {object} recipe.Recipe
 // @Failure 400
 // @Failure 500
+// @Router / [post]
 func (rc *RecipeController) CreateRecipe(ctx *gin.Context) {
-	var req RecipeRequest
+	var req command.RecipeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -119,11 +114,12 @@ func (rc *RecipeController) CreateRecipe(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Recipe ID"
-// @Param recipe body RecipeRequest true "Recipe Request"
+// @Param recipe body command.RecipeRequest true "Recipe Request"
 // @Success 204
 // @Failure 400
 // @Failure 404
 // @Failure 500
+// @Router /{id} [put]
 func (rc *RecipeController) UpdateRecipe(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -131,7 +127,7 @@ func (rc *RecipeController) UpdateRecipe(ctx *gin.Context) {
 		return
 	}
 
-	var req RecipeRequest
+	var req command.RecipeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -162,6 +158,7 @@ func (rc *RecipeController) UpdateRecipe(ctx *gin.Context) {
 // @Failure 400
 // @Failure 404
 // @Failure 500
+// @Router /{id} [delete]
 func (rc *RecipeController) DeleteRecipe(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -186,6 +183,7 @@ func (rc *RecipeController) DeleteRecipe(ctx *gin.Context) {
 // @Param offset query int false "Offset" default(0)
 // @Success 200 {array} recipe.Recipe
 // @Failure 500
+// @Router / [get]
 func (rc *RecipeController) ListRecipes(ctx *gin.Context) {
 	limitStr := ctx.DefaultQuery("limit", "10")
 	offsetStr := ctx.DefaultQuery("offset", "0")
@@ -215,6 +213,7 @@ func (rc *RecipeController) ListRecipes(ctx *gin.Context) {
 // @Produce json
 // @Success 200 {object} map[string]int64
 // @Failure 500
+// @Router /count [get]
 func (rc *RecipeController) CountRecipes(ctx *gin.Context) {
 	count, err := rc.recipeService.Count(ctx)
 	if err != nil {
