@@ -11,4 +11,4 @@ Stories we want to support:
 - [x] As a user, I want to be able to list all chocolate recipes
 - [ ] As a user, I want to be able to search for chocolate recipes
 
-- [ ] As a user, I want to be able to get a list of ingredients for a chocolate recipe, recalculated based on the desired batch yield
+- [x] As a user, I want to be able to get a list of ingredients for a chocolate recipe, recalculated based on the desired batch yield
