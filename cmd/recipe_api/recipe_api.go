@@ -76,19 +76,14 @@ func main() {
 	{
 		// Create a new recipe
 		recipeGroup.POST("", recipeController.CreateRecipe)
-
 		// Get recipe by ID
-		recipeGroup.GET("/{id}", recipeController.GetRecipeByID)
-
+		recipeGroup.GET(":id", recipeController.GetRecipeByID)
 		// Update recipe
-		recipeGroup.PUT("/{id}", recipeController.UpdateRecipe)
-
+		recipeGroup.PUT(":id", recipeController.UpdateRecipe)
 		// Delete recipe
-		recipeGroup.DELETE("/{id}", recipeController.DeleteRecipe)
-
+		recipeGroup.DELETE(":id", recipeController.DeleteRecipe)
 		// List recipes
 		recipeGroup.GET("", recipeController.ListRecipes)
-
 		// Get recipe count
 		recipeGroup.GET("/count", recipeController.CountRecipes)
 	}

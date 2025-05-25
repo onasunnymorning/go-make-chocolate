@@ -31,13 +31,12 @@ type RecipeRequest struct {
 // GetRecipyByID godoc
 // @Summary Get a Recipe by ID
 // @Description Get a Recipe by ID
-// @Tags Recipe
+// @Tags recipes
 // @Produce json
 // @Param id path string true "Recipe ID"
 // @Success 200 {object} recipe.Recipe
 // @Failure 404
 // @Failure 500
-// @Router /recipe/{id} [get]
 func (rc *RecipeController) GetRecipeByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -57,14 +56,13 @@ func (rc *RecipeController) GetRecipeByID(ctx *gin.Context) {
 // CreateRecipe godoc
 // @Summary Create a new Recipe
 // @Description Create a new Recipe
-// @Tags Recipe
+// @Tags recipes
 // @Accept json
 // @Produce json
 // @Param recipe body RecipeRequest true "Recipe Request"
 // @Success 201 {object} recipe.Recipe
 // @Failure 400
 // @Failure 500
-// @Router /recipe [post]
 func (rc *RecipeController) CreateRecipe(ctx *gin.Context) {
 	var req RecipeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -91,7 +89,7 @@ func (rc *RecipeController) CreateRecipe(ctx *gin.Context) {
 // UpdateRecipe godoc
 // @Summary Update a Recipe
 // @Description Update a Recipe
-// @Tags Recipe
+// @Tags recipes
 // @Accept json
 // @Produce json
 // @Param id path string true "Recipe ID"
@@ -100,7 +98,6 @@ func (rc *RecipeController) CreateRecipe(ctx *gin.Context) {
 // @Failure 400
 // @Failure 404
 // @Failure 500
-// @Router /recipe/{id} [put]
 func (rc *RecipeController) UpdateRecipe(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -133,13 +130,12 @@ func (rc *RecipeController) UpdateRecipe(ctx *gin.Context) {
 // DeleteRecipe godoc
 // @Summary Delete a Recipe
 // @Description Delete a Recipe
-// @Tags Recipe
+// @Tags recipes
 // @Param id path string true "Recipe ID"
 // @Success 204
 // @Failure 400
 // @Failure 404
 // @Failure 500
-// @Router /recipe/{id} [delete]
 func (rc *RecipeController) DeleteRecipe(ctx *gin.Context) {
 	id := ctx.Param("id")
 	if id == "" {
@@ -158,13 +154,12 @@ func (rc *RecipeController) DeleteRecipe(ctx *gin.Context) {
 // ListRecipes godoc
 // @Summary List Recipes
 // @Description List Recipes with pagination
-// @Tags Recipe
+// @Tags recipes
 // @Produce json
 // @Param limit query int false "Limit" default(10)
 // @Param offset query int false "Offset" default(0)
 // @Success 200 {array} recipe.Recipe
 // @Failure 500
-// @Router /recipe [get]
 func (rc *RecipeController) ListRecipes(ctx *gin.Context) {
 	limitStr := ctx.DefaultQuery("limit", "10")
 	offsetStr := ctx.DefaultQuery("offset", "0")
@@ -190,11 +185,10 @@ func (rc *RecipeController) ListRecipes(ctx *gin.Context) {
 // CountRecipes godoc
 // @Summary CountRecipes Recipes
 // @Description CountRecipes total number of Recipes
-// @Tags Recipe
+// @Tags recipes
 // @Produce json
 // @Success 200 {object} map[string]int64
 // @Failure 500
-// @Router /recipe/count [get]
 func (rc *RecipeController) CountRecipes(ctx *gin.Context) {
 	count, err := rc.recipeService.Count(ctx)
 	if err != nil {
