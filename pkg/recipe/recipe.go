@@ -50,13 +50,13 @@ func NewRecipe(name, description string, ingredients []Ingredient) (*Recipe, err
 		UpdatedAt:   time.Now(),
 	}
 
-	rcp.CacaoPercentage = rcp.cacaoPercentage()
+	rcp.CacaoPercentage = rcp.CalculateCacaoPercentage()
 
 	return rcp, nil
 }
 
 // calculateCacaoPercentage calculates the cacao percentage of the recipe based on its ingredients.
-func (r *Recipe) cacaoPercentage() float64 {
+func (r *Recipe) CalculateCacaoPercentage() float64 {
 	var totalQuantity, cacaoQuantity float64
 	for _, ingredient := range r.Ingredients {
 		totalQuantity += ingredient.Quantity.Amount
