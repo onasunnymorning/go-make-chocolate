@@ -105,8 +105,11 @@ func (r *Recipe) ToTemplate() *TemplateRecipe {
 	}
 	return &TemplateRecipe{
 		RecipeID:        r.ID,
+		Name:            r.Name,
+		Description:     r.Description,
 		Ingredients:     ingredients,
 		CacaoPercentage: r.CacaoPercentage,
+		Instructions:    r.Instructions,
 	}
 
 }

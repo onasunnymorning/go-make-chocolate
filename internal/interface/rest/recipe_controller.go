@@ -27,6 +27,7 @@ func NewRecipeController(recipeService service.RecipeService) *RecipeController 
 // @Tags recipes
 // @Produce json
 // @Param id path string true "Recipe ID"
+// @Param yield query string false "Yield"
 // @Success 200 {object} recipe.Recipe
 // @Failure 404
 // @Failure 500
@@ -42,6 +43,22 @@ func (rc *RecipeController) GetRecipeByID(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(404, gin.H{"error": "Recipe not found"})
 		return
+	}
+	// Check if yield is requested
+	yieldStr := ctx.Query("yield")
+	if yieldStr != "" {
+		yield, err := strconv.ParseFloat(yieldStr, 64)
+		if err != nil {
+			ctx.JSON(400, gin.H{"error": "Invalid yield value"})
+			return
+		}
+		// Use a TemplateRecipe to return the recipe with yield
+		templateRecipe := recipe.ToTemplate()
+		recipe = templateRecipe.ToRecipe(yield)
+		if recipe == nil {
+			ctx.JSON(404, gin.H{"error": "Recipe could not be rendered with the specified yield"})
+			return
+		}
 	}
 
 	ctx.JSON(200, recipe)
