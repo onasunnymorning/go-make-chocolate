@@ -17,6 +17,15 @@ services:
   recipe-api:
     image: recipe-api:local
     container_name: recipe-api
+    build: .
+    develop:
+      watch:
+        - action: rebuild
+          path: ./internal
+        - action: rebuild
+          path: ./cmd/recipe_api
+        - action: rebuild
+          path: ./pkg/recipe
     ports:
       - "8080:8080"
     environment:

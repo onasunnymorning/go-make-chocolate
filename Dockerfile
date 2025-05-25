@@ -2,7 +2,7 @@
 FROM golang:1.24.3-alpine3.21 AS builder
 
 # Install swag
-RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN go install github.com/swaggo/swag/cmd/swag@v1.8.12
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ RUN go mod download
 COPY . .
 
 # Build the Swagger documentation
-RUN swag init --parseDependency --parseInternal --output ./docs
+RUN swag init -g recipe_api.go --parseDependency --parseInternal --output cmd/recipe_api/docs -d ./cmd/recipe_api,./pkg/recipe,./internal/service,./internal/interface/rest
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o recipe-api ./cmd/recipe_api

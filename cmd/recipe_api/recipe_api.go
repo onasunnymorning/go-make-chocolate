@@ -4,20 +4,18 @@ import (
 	"context"
 	"log"
 	"os"
-	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/onasunnymorning/go-make-chocolate/internal/infra/db/mongo"
+	"github.com/onasunnymorning/go-make-chocolate/internal/interface/rest"
 	"github.com/onasunnymorning/go-make-chocolate/internal/service"
 	"github.com/onasunnymorning/go-make-chocolate/pkg/recipe"
 
-	docs "github.com/onasunnymorning/go-make-chocolate/cmd/recipe_api/docs" // Import docs pkg to be able to access docs.json https://github.com/swaggo/swag/issues/830#issuecomment-725587162
-	swaggerFiles "github.com/swaggo/files"                                  // swagger embed files
-	ginSwagger "github.com/swaggo/gin-swagger"                              // gin-swagger middleware
+	_ "github.com/onasunnymorning/go-make-chocolate/cmd/recipe_api/docs"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
-// RecipeRequest represents the request body for creating/updating a recipe
 type RecipeRequest struct {
 	Name         string              `json:"name" binding:"required"`
 	Description  string              `json:"description"`
@@ -25,6 +23,25 @@ type RecipeRequest struct {
 	Instructions string              `json:"instructions" binding:"required"`
 }
 
+// @title           Recipee API
+// @version         0.1
+// @description     Manage Recipes.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.swagger.io/support
+// @contact.email  support@swagger.io
+
+// @license.name  Apache 2.0
+// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
+
+// @host      localhost:8080
+// @BasePath  /recipe
+
+// @securityDefinitions.basic  BasicAuth
+
+// @externalDocs.description  OpenAPI
+// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	// Create a new Gin router
 	r := gin.Default()
@@ -39,6 +56,7 @@ func main() {
 	db := mongoClient.Database("recipe_db")
 	recipeStore := mongo.NewMongoDBRecipeStore(db)
 	recipeService := service.NewRecipeService(recipeStore)
+	recipeController := rest.NewRecipeController(recipeService)
 
 	// Add a health check endpoint
 	r.GET("/health", func(c *gin.Context) {
@@ -48,147 +66,31 @@ func main() {
 		})
 	})
 
+	// Serve the swagger documentation
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(
+		swaggerFiles.Handler,
+		ginSwagger.DocExpansion("none"))) // collapse all endpoints by default
+
 	// Recipe endpoints
 	recipeGroup := r.Group("/recipe")
 	{
 		// Create a new recipe
-		recipeGroup.POST("", func(c *gin.Context) {
-			var req RecipeRequest
-			if err := c.ShouldBindJSON(&req); err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
-				return
-			}
-
-			recipe := &recipe.Recipe{
-				Name:         req.Name,
-				Description:  req.Description,
-				Ingredients:  req.Ingredients,
-				Instructions: req.Instructions,
-			}
-
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-
-			createdRecipe, err := recipeService.Create(ctx, recipe)
-			if err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
-				return
-			}
-
-			c.JSON(201, createdRecipe)
-		})
+		recipeGroup.POST("", recipeController.CreateRecipe)
 
 		// Get recipe by ID
-		recipeGroup.GET("/:id", func(c *gin.Context) {
-			id := c.Param("id")
-			if id == "" {
-				c.JSON(400, gin.H{"error": "ID is required"})
-				return
-			}
-
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-
-			recipe, err := recipeService.GetByID(ctx, id)
-			if err != nil {
-				c.JSON(404, gin.H{"error": "Recipe not found"})
-				return
-			}
-
-			c.JSON(200, recipe)
-		})
+		recipeGroup.GET("/{id}", recipeController.GetRecipeByID)
 
 		// Update recipe
-		recipeGroup.PUT("/:id", func(c *gin.Context) {
-			id := c.Param("id")
-			if id == "" {
-				c.JSON(400, gin.H{"error": "ID is required"})
-				return
-			}
-
-			var req RecipeRequest
-			if err := c.ShouldBindJSON(&req); err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
-				return
-			}
-
-			recipe := &recipe.Recipe{
-				ID:           id,
-				Name:         req.Name,
-				Description:  req.Description,
-				Ingredients:  req.Ingredients,
-				Instructions: req.Instructions,
-			}
-
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-
-			if err := recipeService.Update(ctx, recipe); err != nil {
-				c.JSON(400, gin.H{"error": err.Error()})
-				return
-			}
-
-			c.Status(204)
-		})
+		recipeGroup.PUT("/{id}", recipeController.UpdateRecipe)
 
 		// Delete recipe
-		recipeGroup.DELETE("/:id", func(c *gin.Context) {
-			id := c.Param("id")
-			if id == "" {
-				c.JSON(400, gin.H{"error": "ID is required"})
-				return
-			}
-
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-
-			if err := recipeService.Delete(ctx, id); err != nil {
-				c.JSON(404, gin.H{"error": "Recipe not found"})
-				return
-			}
-
-			c.Status(204)
-		})
+		recipeGroup.DELETE("/{id}", recipeController.DeleteRecipe)
 
 		// List recipes
-		recipeGroup.GET("", func(c *gin.Context) {
-			limitStr := c.DefaultQuery("limit", "10")
-			offsetStr := c.DefaultQuery("offset", "0")
-
-			limit, err := strconv.ParseInt(limitStr, 10, 64)
-			if err != nil {
-				limit = 10
-			}
-			offset, err := strconv.ParseInt(offsetStr, 10, 64)
-			if err != nil {
-				offset = 0
-			}
-
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-
-			recipes, err := recipeService.List(ctx, limit, offset)
-			if err != nil {
-				c.JSON(500, gin.H{"error": err.Error()})
-				return
-			}
-
-			c.JSON(200, recipes)
-		})
+		recipeGroup.GET("", recipeController.ListRecipes)
 
 		// Get recipe count
-		recipeGroup.GET("/count", func(c *gin.Context) {
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
-
-			count, err := recipeService.Count(ctx)
-			if err != nil {
-				c.JSON(500, gin.H{"error": err.Error()})
-				return
-			}
-
-			c.JSON(200, gin.H{"count": count})
-		})
+		recipeGroup.GET("/count", recipeController.CountRecipes)
 	}
 
 	// Start the server
