@@ -52,7 +52,7 @@ func main() {
 		log.Fatalf("Failed to create logger: %s", err)
 	}
 	// Create a new Gin router
-	r := gin.Default()
+	r := gin.New()
 	// Use ginzap middleware to log requests with Zap
 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
 
