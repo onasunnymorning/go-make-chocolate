@@ -23,7 +23,7 @@ type RecipeRequest struct {
 	Instructions string              `json:"instructions" binding:"required"`
 }
 
-// @title           Recipee API
+// @title           Recipe API
 // @version         0.1
 // @description     Manage Recipes.
 // @termsOfService  http://swagger.io/terms/

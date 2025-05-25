@@ -11,20 +11,22 @@ import (
 
 // RecipeDoc represents a recipe document in MongoDB
 type RecipeDoc struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty"`
-	Name         string             `bson:"name"`
-	Description  string             `bson:"description"`
-	Ingredients  []IngredientDoc    `bson:"ingredients"`
-	Instructions string             `bson:"instructions"`
-	CreatedAt    time.Time          `bson:"created_at"`
-	UpdatedAt    time.Time          `bson:"updated_at"`
-	CreatedBy    string             `bson:"created_by"`
-	UpdatedBy    string             `bson:"updated_by"`
+	ID              primitive.ObjectID `bson:"_id,omitempty"`
+	Name            string             `bson:"name"`
+	Description     string             `bson:"description"`
+	Ingredients     []IngredientDoc    `bson:"ingredients"`
+	Instructions    string             `bson:"instructions"`
+	CreatedAt       time.Time          `bson:"created_at"`
+	UpdatedAt       time.Time          `bson:"updated_at"`
+	CreatedBy       string             `bson:"created_by"`
+	UpdatedBy       string             `bson:"updated_by"`
+	CacaoPercentage float64            `bson:"cacao_percentage,omitempty"` // Optional field for cacao percentage
 }
 
 // IngredientDoc represents an ingredient document in MongoDB
 type IngredientDoc struct {
 	Name     string      `bson:"name"`
+	IsCacao  bool        `bson:"is_cacao"` // Indicates if the ingredient is cacao
 	Quantity QuantityDoc `bson:"quantity"`
 }
 
@@ -37,15 +39,16 @@ type QuantityDoc struct {
 // ToDomain converts a MongoDB document to a domain model
 func (r *RecipeDoc) ToDomain() *recipe.Recipe {
 	return &recipe.Recipe{
-		ID:           r.ID.Hex(),
-		Name:         r.Name,
-		Description:  r.Description,
-		Ingredients:  toDomainIngredients(r.Ingredients),
-		Instructions: r.Instructions,
-		CreatedAt:    r.CreatedAt,
-		UpdatedAt:    r.UpdatedAt,
-		CreatedBy:    r.CreatedBy,
-		UpdatedBy:    r.UpdatedBy,
+		ID:              r.ID.Hex(),
+		Name:            r.Name,
+		Description:     r.Description,
+		Ingredients:     toDomainIngredients(r.Ingredients),
+		Instructions:    r.Instructions,
+		CreatedAt:       r.CreatedAt,
+		UpdatedAt:       r.UpdatedAt,
+		CreatedBy:       r.CreatedBy,
+		UpdatedBy:       r.UpdatedBy,
+		CacaoPercentage: r.CacaoPercentage,
 	}
 }
 
@@ -53,15 +56,16 @@ func (r *RecipeDoc) ToDomain() *recipe.Recipe {
 func ToMongo(r *recipe.Recipe) *RecipeDoc {
 	id, _ := primitive.ObjectIDFromHex(r.ID)
 	return &RecipeDoc{
-		ID:           id,
-		Name:         r.Name,
-		Description:  r.Description,
-		Ingredients:  toMongoIngredients(r.Ingredients),
-		Instructions: r.Instructions,
-		CreatedAt:    r.CreatedAt,
-		UpdatedAt:    r.UpdatedAt,
-		CreatedBy:    r.CreatedBy,
-		UpdatedBy:    r.UpdatedBy,
+		ID:              id,
+		Name:            r.Name,
+		Description:     r.Description,
+		Ingredients:     toMongoIngredients(r.Ingredients),
+		Instructions:    r.Instructions,
+		CreatedAt:       r.CreatedAt,
+		UpdatedAt:       r.UpdatedAt,
+		CreatedBy:       r.CreatedBy,
+		UpdatedBy:       r.UpdatedBy,
+		CacaoPercentage: r.CacaoPercentage,
 	}
 }
 
@@ -70,6 +74,7 @@ func toDomainIngredients(docs []IngredientDoc) []recipe.Ingredient {
 	for i, doc := range docs {
 		ingredients[i] = recipe.Ingredient{
 			Name:     doc.Name,
+			IsCacao:  doc.IsCacao,
 			Quantity: toDomainQuantity(doc.Quantity),
 		}
 	}
@@ -81,6 +86,7 @@ func toMongoIngredients(ingredients []recipe.Ingredient) []IngredientDoc {
 	for i, ing := range ingredients {
 		docs[i] = IngredientDoc{
 			Name:     ing.Name,
+			IsCacao:  ing.IsCacao,
 			Quantity: toMongoQuantity(ing.Quantity),
 		}
 	}

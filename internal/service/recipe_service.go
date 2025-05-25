@@ -45,7 +45,12 @@ func (s *recipeService) Create(ctx context.Context, rcp *recipe.Recipe) (*recipe
 	rcp.CreatedAt = time.Now()
 	rcp.UpdatedAt = time.Now()
 
-	return s.store.Create(ctx, rcp)
+	newRecipe, err := recipe.NewRecipe(rcp.Name, rcp.Description, rcp.Ingredients)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.store.Create(ctx, newRecipe)
 }
 
 // GetByID retrieves a recipe by its ID
