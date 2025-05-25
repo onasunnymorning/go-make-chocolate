@@ -91,6 +91,8 @@ func main() {
 		recipeGroup.POST("", recipeController.CreateRecipe)
 		// Get recipe by ID
 		recipeGroup.GET(":id", recipeController.GetRecipeByID)
+		// Get recipe template by ID
+		recipeGroup.GET(":id/template", recipeController.GetRecipeTemplate)
 		// Update recipe
 		recipeGroup.PUT(":id", recipeController.UpdateRecipe)
 		// Delete recipe

@@ -12,6 +12,7 @@ import (
 type RecipeService interface {
 	Create(ctx context.Context, recipe *recipe.Recipe) (*recipe.Recipe, error)
 	GetByID(ctx context.Context, id string) (*recipe.Recipe, error)
+	GetTemplateByID(ctx context.Context, id string) (*recipe.TemplateRecipe, error)
 	Update(ctx context.Context, recipe *recipe.Recipe) error
 	Delete(ctx context.Context, id string) error
 	List(ctx context.Context, limit, offset int64) ([]*recipe.Recipe, error)
@@ -56,6 +57,18 @@ func (s *recipeService) Create(ctx context.Context, rcp *recipe.Recipe) (*recipe
 // GetByID retrieves a recipe by its ID
 func (s *recipeService) GetByID(ctx context.Context, id string) (*recipe.Recipe, error) {
 	return s.store.GetByID(ctx, id)
+}
+
+// GetTemplate retrieves a recipe and returns it as a template
+func (s *recipeService) GetTemplateByID(ctx context.Context, id string) (*recipe.TemplateRecipe, error) {
+	rcp, err := s.store.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	template := rcp.ToTemplate()
+
+	return template, nil
 }
 
 // Update updates an existing recipe

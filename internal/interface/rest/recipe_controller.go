@@ -53,6 +53,32 @@ func (rc *RecipeController) GetRecipeByID(ctx *gin.Context) {
 	ctx.JSON(200, recipe)
 }
 
+// GetRecipeTemplate godoc
+// @Summary Get a Recipe and return a template
+// @Description Get a Recipe and return a template
+// @Tags recipes
+// @Produce json
+// @Param id path string true "Recipe ID"
+// @Success 200 {object} recipe.TemplateRecipe
+// @Failure 404
+// @Failure 500
+// @Router /{id}/template [get]
+func (rc *RecipeController) GetRecipeTemplate(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(400, gin.H{"error": "ID is required"})
+		return
+	}
+
+	template, err := rc.recipeService.GetTemplateByID(ctx, id)
+	if err != nil {
+		ctx.JSON(404, gin.H{"error": "Recipe not found"})
+		return
+	}
+
+	ctx.JSON(200, template)
+}
+
 // CreateRecipe godoc
 // @Summary Create a new Recipe
 // @Description Create a new Recipe
