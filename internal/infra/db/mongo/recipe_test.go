@@ -25,7 +25,7 @@ func TestConversions(t *testing.T) {
 			Name: "Water",
 			Quantity: recipe.Quantity{
 				Amount: 500,
-				Unit:   recipe.Milliliter,
+				Unit:   recipe.Gram,
 			},
 		},
 	}
@@ -130,27 +130,21 @@ func TestConversions(t *testing.T) {
 	// Test quantity conversion
 	quantityDoc := QuantityDoc{
 		Amount: 200,
-		Unit:   "ml",
+		Unit:   "g",
 	}
 
 	convertedQuantity := toDomainQuantity(quantityDoc)
 	if convertedQuantity.Amount != quantityDoc.Amount {
 		t.Errorf("Expected quantity amount %f, got %f", quantityDoc.Amount, convertedQuantity.Amount)
 	}
-	if convertedQuantity.Unit != recipe.Milliliter {
-		t.Errorf("Expected quantity unit %s, got %s", recipe.Milliliter, convertedQuantity.Unit)
+	if convertedQuantity.Unit != recipe.Gram {
+		t.Errorf("Expected quantity unit %s, got %s", recipe.Gram, convertedQuantity.Unit)
 	}
 
 	// Test all unit conversions
 	testUnits := []recipe.Unit{
 		recipe.Gram,
 		recipe.Kilogram,
-		recipe.Milliliter,
-		recipe.Liter,
-		recipe.Cup,
-		recipe.Tablespoon,
-		recipe.Teaspoon,
-		recipe.Piece,
 	}
 
 	for _, unit := range testUnits {
@@ -183,7 +177,7 @@ func TestCacaoPercentage(t *testing.T) {
 			Name: "Milk",
 			Quantity: recipe.Quantity{
 				Amount: 50,
-				Unit:   recipe.Milliliter,
+				Unit:   recipe.Gram,
 			},
 			IsCacao: false,
 		},

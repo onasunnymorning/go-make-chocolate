@@ -23,10 +23,6 @@ func (q Quantity) ConvertTo(target Unit) (Quantity, error) {
 		return Quantity{Amount: q.Amount / 1000, Unit: target}, nil
 	case q.Unit == Kilogram && target == Gram:
 		return Quantity{Amount: q.Amount * 1000, Unit: target}, nil
-	case q.Unit == Milliliter && target == Liter:
-		return Quantity{Amount: q.Amount / 1000, Unit: target}, nil
-	case q.Unit == Liter && target == Milliliter:
-		return Quantity{Amount: q.Amount * 1000, Unit: target}, nil
 	default:
 		return Quantity{}, fmt.Errorf("conversion from %s to %s not supported", q.Unit, target)
 	}
@@ -50,6 +46,6 @@ func ParseQuantity(s string) (Quantity, error) {
 // SupportedUnits returns the list of all defined units.
 func SupportedUnits() []Unit {
 	return []Unit{
-		Gram, Kilogram, Milliliter, Liter, Cup, Tablespoon, Teaspoon, Piece,
+		Gram, Kilogram,
 	}
 }

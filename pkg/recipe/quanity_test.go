@@ -38,20 +38,8 @@ func TestConvertTo(t *testing.T) {
 			want:   Quantity{Amount: 2000, Unit: Gram},
 		},
 		{
-			name:   "Milliliter to Liter",
-			q:      Quantity{Amount: 2500, Unit: Milliliter},
-			target: Liter,
-			want:   Quantity{Amount: 2.5, Unit: Liter},
-		},
-		{
-			name:   "Liter to Milliliter",
-			q:      Quantity{Amount: 3, Unit: Liter},
-			target: Milliliter,
-			want:   Quantity{Amount: 3000, Unit: Milliliter},
-		},
-		{
 			name:    "Unsupported conversion",
-			q:       Quantity{Amount: 1, Unit: Cup},
+			q:       Quantity{Amount: 1, Unit: "blbal"},
 			target:  Gram,
 			want:    Quantity{},
 			wantErr: true,
@@ -113,7 +101,7 @@ func TestParseQuantity(t *testing.T) {
 func TestSupportedUnits(t *testing.T) {
 	units := SupportedUnits()
 	expected := []Unit{
-		Gram, Kilogram, Milliliter, Liter, Cup, Tablespoon, Teaspoon, Piece,
+		Gram, Kilogram,
 	}
 	if len(units) != len(expected) {
 		t.Errorf("SupportedUnits() returned %d units, want %d", len(units), len(expected))

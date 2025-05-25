@@ -69,3 +69,29 @@ func (r *Recipe) CalculateCacaoPercentage() float64 {
 	}
 	return (cacaoQuantity / totalQuantity) * 100
 }
+
+// ToTemplate converts the Recipe to a TemplateRecipe, which is used for creating new recipes based on templates.
+// It calculates the percentages of each ingredient and returns a TemplateRecipe instance.
+func (r *Recipe) ToTemplate() *TemplateRecipe {
+	totalQuantity := 0.0
+	for _, ingredient := range r.Ingredients {
+		totalQuantity += ingredient.Quantity.Amount
+	}
+	ingredients := make([]TemplateIngredient, len(r.Ingredients))
+	for i, ingredient := range r.Ingredients {
+		percentage := 0.0
+		if totalQuantity > 0 {
+			percentage = (ingredient.Quantity.Amount / totalQuantity) * 100
+		}
+		ingredients[i] = TemplateIngredient{
+			Name:       ingredient.Name,
+			IsCacao:    ingredient.IsCacao,
+			Percentage: percentage,
+		}
+	}
+	return &TemplateRecipe{
+		RecipeID:    r.ID,
+		Ingredients: ingredients,
+	}
+
+}
